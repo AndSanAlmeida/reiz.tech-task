@@ -1,20 +1,33 @@
-import { onMounted, ref } from "vue"
+import { Ref, UnwrapRef, onMounted, ref, watch } from "vue"
 
-export const useFetch = <T>(url: string, params: Record<string, string>) => {
+export const useFetch = <T, P extends string | Record<string, string> | string[][] | URLSearchParams | undefined>(url: string, params: Ref<P>) => {
 
     const data = ref<T | null>(null)
     const isLoading = ref(false)
+    const isError = ref(false)
+
+    const getData = async () => {
+        isLoading.value = true
+        isError.value = false
+
+        try {
+            const res = await fetch(url + '?' + new URLSearchParams(params.value).toString())
+            const result = await res.json() as UnwrapRef<T>
+            data.value = result
+        } catch {
+            isError.value = true;
+        } finally {
+            isLoading.value = false
+        }
+    }
 
     onMounted(() => {
-        isLoading.value = true
-        fetch(url + '?' + new URLSearchParams(params).toString())
-            .then(res => res.json())
-            .then(res => {
-                data.value = res
-            }).finally(() => {
-                isLoading.value = false
-            });
+        getData()
     })
+
+    watch(params, async () => {
+        getData()
+    }, { deep: true })
 
     return { data, isLoading }
 }

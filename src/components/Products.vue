@@ -1,10 +1,24 @@
 <script setup lang="ts">
-import { ProductResponse } from "../types";
+import { ref, watch } from "vue";
+import { ProductResponse, Search } from "../types";
 import { useFetch } from "../utils/useFetch";
+import debounce from 'lodash.debounce'
 
-const { data, isLoading } = useFetch<ProductResponse>('https://dummyjson.com/products', {
-    limit: '10'
+const search = ref<Search>({
+    title: '',
+    brand: ''
 })
+
+const params = ref({
+    limit: '10',
+    q: search.value.title + search.value.brand
+})
+
+const { data, isLoading } = useFetch<ProductResponse, typeof params['value']>('https://dummyjson.com/products/search', params)
+
+watch(search, debounce((newSearch: typeof search['value']) => {
+    params.value.q = newSearch.title + ' ' + newSearch.brand
+}, 500), { deep: true })
 
 </script>
 <template>
@@ -13,12 +27,12 @@ const { data, isLoading } = useFetch<ProductResponse>('https://dummyjson.com/pro
         <div class="columns-1 lg:columns-2">
             <div class="mb-4 lg:mb-0">
                 <label for="title" class="block mb-2 text-md font-medium">Title</label>
-                <input type="text" id="title" placeholder="Enter Title"
+                <input type="text" id="title" placeholder="Enter Title" v-model="search.title"
                     class="bg-gray-50 border border-gray-300 text-md focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5">
             </div>
             <div>
                 <label for="brand" class="block mb-2 text-md font-medium">Brand</label>
-                <input type="text" id="brand" placeholder="Enter Brand"
+                <input type="text" id="brand" placeholder="Enter Brand" v-model="search.brand"
                     class="bg-gray-50 border border-gray-300 text-md focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5">
             </div>
         </div>

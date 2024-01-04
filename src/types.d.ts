@@ -19,4 +19,9 @@ export type Product = {
     images: string[]
 }
 
+export type Search = {
+    title: string,
+    brand: string,
+}
+
 

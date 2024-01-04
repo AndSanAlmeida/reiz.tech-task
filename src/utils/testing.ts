@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import { shallowMount } from "@vue/test-utils"
 import { defineComponent } from "vue"
+import { shallowMount } from "@vue/test-utils"
 
 export function renderHook<V>(setup: () => V) {
     const App = defineComponent({

@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@vue/test-utils": "^2.4.3",
+    "lodash.debounce": "^4.0.8",
     "vue": "^3.3.11"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
     "@vitejs/plugin-vue": "^4.5.2",
     "autoprefixer": "^10.4.16",
     "jsdom": "^23.0.1",
